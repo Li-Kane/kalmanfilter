@@ -28,7 +28,7 @@ class SquareRobotNode(Node):
         planeId = p.loadURDF("plane.urdf", physicsClientId=self.physicsClient)
         startPos = [0, 0, 1]
         start_or = p.getQuaternionFromEuler([0, 0, 0])
-        self.robotid = p.loadURDF("/home/michael/Documents/kfenv/src/square_robot_sim/square_robot_sim/slidingbox.urdf",
+        self.robotid = p.loadURDF("src/square_robot_sim/square_robot_sim/slidingbox.urdf",
                                   startPos, start_or, useFixedBase=True, useMaximalCoordinates=False,
                                   physicsClientId=self.physicsClient)
 

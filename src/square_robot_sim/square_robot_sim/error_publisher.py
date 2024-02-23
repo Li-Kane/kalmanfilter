@@ -1,12 +1,10 @@
 import time
-
 import numpy as np
 from numpy.linalg import norm
 
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray, Float32
-
 
 class ErrorPublisher(Node):
 
