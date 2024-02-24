@@ -18,22 +18,22 @@ def filter():
                           [0, 0, 0, 0, 1, dt],
                           [0, 0, 0, 0, 0, 1]])
 
-    tracker.Q = Q_discrete_white_noise(dim=3, dt=dt, var=0.001, block_size=2)
+    tracker.Q = Q_discrete_white_noise(dim=3, dt=dt, var=0.0001, block_size=2)
 
     tracker.H = np.array([[1,0,0,0,0,0],
                           [0,0,0,1,0,0]])
 
-    tracker.R = np.array([[16, 0],
-                          [0, 16]])
+    tracker.R = np.array([[0.0001, 0],
+                          [0, 0.0001]])
 
     tracker.x = np.array([[0,0,0,0,0,0]]).T
 
-    tracker.P = np.array([[16, 0, 0, 0, 0, 0],
-                          [0, 200, 0, 0, 0, 0],
-                          [0, 0, 100, 0, 0, 0],
-                          [0, 0, 0, 16, 0, 0],
-                          [0, 0, 0, 0, 200, 0],
-                          [0, 0, 0, 0, 0, 100]])
+    tracker.P = np.array([[500, 0, 0, 0, 0, 0],
+                          [0, 500, 0, 0, 0, 0],
+                          [0, 0, 500, 0, 0, 0],
+                          [0, 0, 0, 500, 0, 0],
+                          [0, 0, 0, 0, 500, 0],
+                          [0, 0, 0, 0, 0, 500]])
     return tracker
 
 class SimpleRepublisher(Node):
@@ -42,7 +42,7 @@ class SimpleRepublisher(Node):
         super().__init__('simple_republisher')
         self.republisher = self.create_publisher(Float32MultiArray, 'predicted', 10)
         self.low_freq_sub = self.create_subscription(Float32MultiArray, 'low_freq', self.low_freq_callback, 10)
-        self.filter_pub = self.create_publisher(Float32MultiArray, 'filter', 10)
+        self.filter_pub = self.create_publisher(Float32MultiArray, 'filter', 1)
         self.filter = filter()
 
     def low_freq_callback(self, msg):
@@ -50,11 +50,8 @@ class SimpleRepublisher(Node):
         self.filter.predict()
         self.filter.update([msg.data[0], msg.data[1]])
         prediction = self.filter.x
-        prediction = prediction.tolist()
-        print(prediction[0])
-        print(type(prediction[0]))
         prediction_msg = Float32MultiArray()
-        prediction_msg.data = [prediction[0], prediction[1]]
+        prediction_msg.data = [prediction[0][0].tolist(), prediction[3][0].tolist()]
         self.filter_pub.publish(prediction_msg)
 
 def main(args=None):
